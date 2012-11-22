@@ -35,7 +35,7 @@ require_once('includes/nagios.class.php');
 <table class="table table-bordered table-condensed table-striped"><thead><tr><th>Hostname</th><th>Output</th><th>Down Since</th></tr></thead>
 <tbody>
 <?
-foreach($statusArray['down'] as $hostName => $output)
+foreach($statusArray['down_hosts'] as $hostName => $output)
 {
     $niceTime = nicetime($output['down_since']); 
     echo "<tr>";

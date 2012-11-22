@@ -1,0 +1,108 @@
+table.table thead .sorting,
+table.table thead .sorting_asc,
+table.table thead .sorting_desc,
+table.table thead .sorting_asc_disabled,
+table.table thead .sorting_desc_disabled {
+    cursor: pointer;
+    *cursor: hand;
+}
+ 
+table.table thead .sorting { background: url('../images/sort_both.png') no-repeat center right; }
+table.table thead .sorting_asc { background: url('../images/sort_asc.png') no-repeat center right; }
+table.table thead .sorting_desc { background: url('../images/sort_desc.png') no-repeat center right; }
+ 
+table.table thead .sorting_asc_disabled { background: url('../images/sort_asc_disabled.png') no-repeat center right; }
+table.table thead .sorting_desc_disabled { background: url('../images/sort_desc_disabled.png') no-repeat center right; }
+.dataTables_wrapper
+{
+
+    margin-left:18px;
+}
+.dataTables_info {
+    margin-left:30px;
+}
+.bodyContainer {
+    padding:5px;
+}
+* {
+    outline:none !important;
+    -moz-outline: none !important;
+}
+.warning {
+    background-color: #F2DEDE !important;
+    border-color: #EED3D7 !important;
+}
+.highlightRow td {
+    background-color:#c09853 !important;
+}
+.rowOk {
+    background-color:#DFF0D8   !important;
+}
+.rowWarning {
+    background-color:#FCF8E3 !important;
+}
+.rowCritical {
+    background-color:#F2DEDE !important;
+}
+table.rack {
+  border-spacing: 0px;
+  border-collapse: collapse;
+}
+table.rack caption {
+  font-weight:bold;
+}
+
+table.rack th {
+  padding: 2px;
+  border-width: 1px;
+  border-style: solid ;
+  border-color: #eee;
+  background-color: #888;
+  color:#fff;
+}
+table.rack td {
+  padding: 1px;
+  border-width: 1px;
+  border-style: solid ;
+  border-color: #afafaf ;
+  font-size:7pt;
+  vertical-align: middle;
+}
+
+table.rack td.highlight { 
+  background-color: #81E86C;
+  font-weight:700;
+  min-width:120px;
+}
+table.rack td.occupied { 
+  background-color: #CBE98B;
+  font-weight:700;
+  min-width:120px;
+}
+table.rack td.emptyrow { 
+  background-color: #fafafa;
+  font-weight:700;
+  min-width:120px;
+}
+
+td.smallrack h1 {
+  display:none;
+}
+
+td.smallrack table.rack tr td {
+  min-width:60px;
+  font-size:7pt;
+  padding:0px 1px;
+}
+body .modal-object {
+    width: 750px;
+    margin-left: -345px;
+    margin-right: -375px;
+}
+.smallGraph {
+    height:200px;
+}
+
+
+
+
