@@ -1,4 +1,4 @@
 nagiosng
 ========
 
-NagiosNextGeneration - bootstrapped gui to nagios. 
+NagiosNextGeneration - bootstrapped GUI to Nagios. 
