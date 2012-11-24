@@ -1,11 +1,13 @@
 <?php
+$logFile = '/var/log/nagios3/nagios.log';
+$statusFile = '/var/cache/nagios3/status.dat';
+
 class nagiosNG {
 
     function nagiosNG()
     {
-        $this->objectFile = '/var/www/intranet/nagiosng/data/objects.cache';
-        // $this->statusFile = '/var/www/intranet/nagiosng/data/status.dat';
-        $this->statusFile = '/var/www/intranet/nagiosng/data/status.dat';
+        global $statusFile;
+        $this->statusFile = $statusFile;
     }
 
         function print_tree($data)
@@ -206,7 +208,7 @@ class nagiosNG {
 
 # CONFIG
 $nagios = new nagiosNG();
-$nagios->statusFile = "/var/www/intranet/nagiosng/data/status.dat";
+$nagios->statusFile = $statusFile;
 $debug = false;
 $data = $nagios->getData3($statusFile); // returns an array
 $numProblems=0;
@@ -345,7 +347,7 @@ foreach($data['services'] as $hostName => $serviceArray)
 }
 // LOg file
 $hideLine=array();
-$handle = @fopen("/var/www/intranet/nagiosng/data/nagios.log", "r");
+$handle = @fopen($logFile, "r");
 if ($handle) {
     while (($buffer = fgets($handle, 4096)) !== false) {
         if(!preg_match("/\[(.*?)\] (.*?)$/",$buffer,$lineMatch))

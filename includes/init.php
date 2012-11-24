@@ -4,9 +4,7 @@ Nav config
 */
 $navArray = array("dash.php" => "Dashboard",
                   "problems.php" => "Problems",
-                  "objects.php" => "Objects",
                   "log.php" => "Log",
-                  "browse.php" => "Browse"
                   );
 
 
