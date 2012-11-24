@@ -1,6 +1,12 @@
 <?
 require_once('includes/init.php');
 require_once('includes/nagios.class.php');
+$nagios = new nagiosNG();
+$nagios->statusFile = $statusFile;
+$debug = false;
+$data = $nagios->getData3($statusFile); // returns an array
+$statusArray=$nagios->parseData($data);
+
 ?>
 <!DOCTYPE html>
 <html lang="en"><head>

@@ -121,6 +121,151 @@ class nagiosNG {
 
         return $retArray;    
     }
+    function parseData($data)
+    {
+        $numProblems=0;
+        $statusArray=array();
+        foreach($data['hosts'] as $hostName => $hostArray)
+        {
+            $problem=0;
+            foreach($hostArray as $field => $value)
+            {
+                switch($field)
+                {
+                    case 'current_state':
+                        switch($value)
+                        {
+                            case 1: // Down
+                                // echo "Host: {$hostName} DOWN: ";
+                                $numProblems++;
+                                $problem=1;
+                            break;
+                            case 2: // Unreachable
+                                // echo "Host: {$hostName} UNREACHABLE: ";
+                                $numProblems++;
+                                $problem=1;
+                            break;
+                            case 3: // Unknown
+                                // echo "Host: {$hostName} UNKOWN: ";
+                                $numProblems++;
+                                $problem=1;
+                            break;
+
+                        }
+                    break;
+                    case 'plugin_output':
+                        switch($problem)
+                        {
+                            case 1:
+                                $statusArray['down_hosts'][$hostName]['last_out']=$value;
+                                // echo $value."\n";
+                            break;
+                        }
+                    break;
+                    case 'last_state_change':
+                        switch($problem)
+                        {
+                            case 1:
+                                $statusArray['down_hosts'][$hostName]['down_since']=$value;
+                                // echo $value."\n";
+                            break;
+                        }
+                    break;
+
+                }
+            }
+        }
+
+        foreach($data['services'] as $hostName => $serviceArray)
+        {
+            foreach($serviceArray as $serviceName => $serviceDetails)
+            {
+                $problem=0;
+                foreach($serviceDetails as $field => $value)
+                {
+                    switch($field)
+                    {
+                        case 'current_state':
+                            switch($value)
+                            {
+                                case 0: // UP
+                                    // echo "Host: {$hostName} Service: {$serviceName} DOWN: ";
+                                    $problem=0;
+                                    $statusArray['up_services'][$hostName][$serviceName]['current_state']=$value;
+                                break;    
+                                case 1: // Down
+                                    // echo "Host: {$hostName} Service: {$serviceName} DOWN: ";
+                                    $numProblems++;
+                                    $problem=1;
+                                    $statusArray['down_services'][$hostName][$serviceName]['current_state']=$value;
+                                break;
+                                case 2: // Unreachable
+                                    // echo "Host: {$hostName} Service: {$serviceName} UNREACHABLE: ";
+                                    $numProblems++;
+                                    $problem=1;
+                                    $statusArray['down_services'][$hostName][$serviceName]['current_state']=$value;
+                                break;
+                                case 3: // Unknown
+                                    // echo "Host: {$hostName} Service: {$serviceName} UNKOWN: ";
+                                    $numProblems++;
+                                    $problem=1;
+                                    $statusArray['down_services'][$hostName][$serviceName]['current_state']=$value;
+                                break;
+
+                            }
+                        break;
+                        case 'last_state_change':
+                            switch($problem)
+                            {
+                                case 1:
+                                    $statusArray['down_services'][$hostName][$serviceName]['down_since']=$value;
+                                    // echo $value."\n";
+                                break;
+                                case 0:
+                                    $statusArray['up_services'][$hostName][$serviceName]['up_since']=$value;
+                                    // echo $value."\n";
+                                break;
+                            }
+                        break;
+
+                        case 'plugin_output':
+                            if(preg_match("/index ([0-9]+)/",$value,$indexArr))
+                            {
+                                $index=$indexArr[1];
+                            }
+                            else
+                            {
+                                $index=0;
+                            }
+                            switch($problem)
+                            {
+                                case 1:
+                                    $statusArray['down_services'][$hostName][$serviceName]['last_out'] = $value;
+                                    $statusArray['down_services'][$hostName][$serviceName]['index'] = $index;
+                                    $statusArray['down_index'][$index]=1;
+                                    // echo $value."\n";
+                                break;
+                                case 0:
+                                    $statusArray['up_services'][$hostName][$serviceName]['last_out'] = $value;
+                                    $statusArray['up_services'][$hostName][$serviceName]['index'] = $index;
+                                    // echo $value."\n";
+                                break;
+                            }
+                        break;
+
+                    }
+                }
+            }
+        }
+        return $statusArray;
+    }
+
+    function getJSON($data)
+    {
+
+
+
+    }
 
 
     // this formats the age of a check in seconds into a nice textual description
@@ -207,144 +352,6 @@ class nagiosNG {
 
 
 # CONFIG
-$nagios = new nagiosNG();
-$nagios->statusFile = $statusFile;
-$debug = false;
-$data = $nagios->getData3($statusFile); // returns an array
-$numProblems=0;
-$statusArray=array();
-foreach($data['hosts'] as $hostName => $hostArray)
-{
-    $problem=0;
-    foreach($hostArray as $field => $value)
-    {
-        switch($field)
-        {
-            case 'current_state':
-                switch($value)
-                {
-                    case 1: // Down
-                        // echo "Host: {$hostName} DOWN: ";
-                        $numProblems++;
-                        $problem=1;
-                    break;
-                    case 2: // Unreachable
-                        // echo "Host: {$hostName} UNREACHABLE: ";
-                        $numProblems++;
-                        $problem=1;
-                    break;
-                    case 3: // Unknown
-                        // echo "Host: {$hostName} UNKOWN: ";
-                        $numProblems++;
-                        $problem=1;
-                    break;
-
-                }
-            break;
-            case 'plugin_output':
-                switch($problem)
-                {
-                    case 1:
-                        $statusArray['down_hosts'][$hostName]['last_out']=$value;
-                        // echo $value."\n";
-                    break;
-                }
-            break;
-            case 'last_state_change':
-                switch($problem)
-                {
-                    case 1:
-                        $statusArray['down_hosts'][$hostName]['down_since']=$value;
-                        // echo $value."\n";
-                    break;
-                }
-            break;
-
-        }
-    }
-}
-
-foreach($data['services'] as $hostName => $serviceArray)
-{
-    foreach($serviceArray as $serviceName => $serviceDetails)
-    {
-        $problem=0;
-        foreach($serviceDetails as $field => $value)
-        {
-            switch($field)
-            {
-                case 'current_state':
-                    switch($value)
-                    {
-                        case 0: // UP
-                            // echo "Host: {$hostName} Service: {$serviceName} DOWN: ";
-                            $problem=0;
-                            $statusArray['up_services'][$hostName][$serviceName]['current_state']=$value;
-                        break;    
-                        case 1: // Down
-                            // echo "Host: {$hostName} Service: {$serviceName} DOWN: ";
-                            $numProblems++;
-                            $problem=1;
-                            $statusArray['down_services'][$hostName][$serviceName]['current_state']=$value;
-                        break;
-                        case 2: // Unreachable
-                            // echo "Host: {$hostName} Service: {$serviceName} UNREACHABLE: ";
-                            $numProblems++;
-                            $problem=1;
-                            $statusArray['down_services'][$hostName][$serviceName]['current_state']=$value;
-                        break;
-                        case 3: // Unknown
-                            // echo "Host: {$hostName} Service: {$serviceName} UNKOWN: ";
-                            $numProblems++;
-                            $problem=1;
-                            $statusArray['down_services'][$hostName][$serviceName]['current_state']=$value;
-                        break;
-
-                    }
-                break;
-                case 'last_state_change':
-                    switch($problem)
-                    {
-                        case 1:
-                            $statusArray['down_services'][$hostName][$serviceName]['down_since']=$value;
-                            // echo $value."\n";
-                        break;
-                        case 0:
-                            $statusArray['up_services'][$hostName][$serviceName]['up_since']=$value;
-                            // echo $value."\n";
-                        break;
-                    }
-                break;
-
-                case 'plugin_output':
-                    if(preg_match("/index ([0-9]+)/",$value,$indexArr))
-                    {
-                        $index=$indexArr[1];
-                    }
-                    else
-                    {
-                        $index=0;
-                    }
-                    switch($problem)
-                    {
-                        case 1:
-                            $statusArray['down_services'][$hostName][$serviceName]['last_out'] = $value;
-                            $statusArray['down_services'][$hostName][$serviceName]['index'] = $index;
-                            $statusArray['down_index'][$index]=1;
-                            // echo $value."\n";
-                        break;
-                        case 0:
-                            $statusArray['up_services'][$hostName][$serviceName]['last_out'] = $value;
-                            $statusArray['up_services'][$hostName][$serviceName]['index'] = $index;
-                            // echo $value."\n";
-                        break;
-                    }
-                break;
-
-            }
-        }
-    }
-}
 // LOg file
 $hideLine=array();
 $handle = @fopen($logFile, "r");
